@@ -54,17 +54,17 @@ const generateRoadmap = async (projectTitle, problemCategory) => {
 };
 
 exports.createProject = async (req, res) => {
-  const client = await pool.connect();
+  const connection = await pool.getConnection();
   try {
-    await client.query('BEGIN');
+    await connection.beginTransaction();
     const { user_id, problem_id, title, category } = req.body;
 
     // 1. Create Project
-    const projectResult = await client.query(
-      'INSERT INTO projects (user_id, problem_id, title) VALUES ($1, $2, $3) RETURNING *',
+    const [projectResult] = await connection.query(
+      'INSERT INTO projects (user_id, problem_id, title) VALUES (?, ?, ?)',
       [user_id, problem_id, title]
     );
-    const project = projectResult.rows[0];
+    const projectId = projectResult.insertId;
 
     // 2. Generate Roadmap
     const roadmapPhases = await generateRoadmap(title, category);
@@ -72,28 +72,28 @@ exports.createProject = async (req, res) => {
     // 3. Save Roadmap
     for (let i = 0; i < roadmapPhases.length; i++) {
       const phaseData = roadmapPhases[i];
-      const phaseResult = await client.query(
-        'INSERT INTO roadmap_phases (project_id, title, order_index) VALUES ($1, $2, $3) RETURNING id',
-        [project.id, phaseData.title, i]
+      const [phaseResult] = await connection.query(
+        'INSERT INTO roadmap_phases (project_id, title, order_index) VALUES (?, ?, ?)',
+        [projectId, phaseData.title, i]
       );
-      const phaseId = phaseResult.rows[0].id;
+      const phaseId = phaseResult.insertId;
 
       for (let j = 0; j < phaseData.tasks.length; j++) {
-        await client.query(
-          'INSERT INTO tasks (phase_id, title, order_index) VALUES ($1, $2, $3)',
+        await connection.query(
+          'INSERT INTO tasks (phase_id, title, order_index) VALUES (?, ?, ?)',
           [phaseId, phaseData.tasks[j], j]
         );
       }
     }
 
-    await client.query('COMMIT');
-    res.status(201).json({ message: 'Project created successfully', projectId: project.id });
+    await connection.commit();
+    res.status(201).json({ message: 'Project created successfully', projectId: projectId });
   } catch (err) {
-    await client.query('ROLLBACK');
+    await connection.rollback();
     console.error(err);
     res.status(500).json({ error: 'Server error' });
   } finally {
-    client.release();
+    connection.release();
   }
 };
 
@@ -102,32 +102,32 @@ exports.getProjectDetails = async (req, res) => {
     const { id } = req.params;
 
     // Get Project Info
-    const projectResult = await pool.query(
+    const [projectRows] = await pool.query(
       `SELECT p.*, prob.title as problem_title, prob.category
        FROM projects p
        JOIN problems prob ON p.problem_id = prob.id
-       WHERE p.id = $1`,
+       WHERE p.id = ?`,
       [id]
     );
 
-    if (projectResult.rows.length === 0) {
+    if (projectRows.length === 0) {
       return res.status(404).json({ error: 'Project not found' });
     }
-    const project = projectResult.rows[0];
+    const project = projectRows[0];
 
     // Get Roadmap (Phases & Tasks)
-    const phasesResult = await pool.query(
-      'SELECT * FROM roadmap_phases WHERE project_id = $1 ORDER BY order_index',
+    const [phasesRows] = await pool.query(
+      'SELECT * FROM roadmap_phases WHERE project_id = ? ORDER BY order_index',
       [id]
     );
-    const phases = phasesResult.rows;
+    const phases = phasesRows;
 
     for (let phase of phases) {
-      const tasksResult = await pool.query(
-        'SELECT * FROM tasks WHERE phase_id = $1 ORDER BY order_index',
+      const [tasksRows] = await pool.query(
+        'SELECT * FROM tasks WHERE phase_id = ? ORDER BY order_index',
         [phase.id]
       );
-      phase.tasks = tasksResult.rows;
+      phase.tasks = tasksRows;
     }
 
     project.roadmap = phases;

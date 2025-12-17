@@ -36,7 +36,7 @@ Unlike generic AI idea generators, ProjNavigator focuses on problem-first thinki
 
 - **Frontend**: React + TailwindCSS
 - **Backend**: Node.js + Express
-- **Database**: PostgreSQL
+- **Database**: MySQL
 - **AI Integration**: GPT-4 API
 
 ## 📦 Project Structure
@@ -48,7 +48,7 @@ Unlike generic AI idea generators, ProjNavigator focuses on problem-first thinki
 
 ### Prerequisites
 - Node.js installed.
-- PostgreSQL database running.
+- MySQL database running.
 
 ### Installation
 

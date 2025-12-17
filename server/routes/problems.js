@@ -11,11 +11,11 @@ router.get('/', async (req, res) => {
     let conditions = [];
 
     if (category) {
-      conditions.push(`category = $${params.length + 1}`);
+      conditions.push('category = ?');
       params.push(category);
     }
     if (difficulty) {
-      conditions.push(`difficulty = $${params.length + 1}`);
+      conditions.push('difficulty = ?');
       params.push(difficulty);
     }
 
@@ -25,8 +25,8 @@ router.get('/', async (req, res) => {
 
     query += ' ORDER BY created_at DESC';
 
-    const result = await pool.query(query, params);
-    res.json(result.rows);
+    const [rows] = await pool.query(query, params);
+    res.json(rows);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Server error' });
@@ -37,13 +37,13 @@ router.get('/', async (req, res) => {
 router.get('/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    const result = await pool.query('SELECT * FROM problems WHERE id = $1', [id]);
+    const [rows] = await pool.query('SELECT * FROM problems WHERE id = ?', [id]);
 
-    if (result.rows.length === 0) {
+    if (rows.length === 0) {
       return res.status(404).json({ error: 'Problem not found' });
     }
 
-    res.json(result.rows[0]);
+    res.json(rows[0]);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Server error' });
