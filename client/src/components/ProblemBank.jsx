@@ -1,51 +1,52 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+import { MOCK_PROBLEMS } from '../data/mockData';
 
 const ProblemBank = ({ onSelectProblem }) => {
-  const [problems, setProblems] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [filter, setFilter] = useState('All');
 
-  useEffect(() => {
-    const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
-    fetch(`${apiUrl}/api/problems`)
-      .then(res => res.json())
-      .then(data => {
-        setProblems(data);
-        setLoading(false);
-      })
-      .catch(err => {
-        console.error(err);
-        setLoading(false);
-      });
-  }, []);
+  const filteredProblems = filter === 'All'
+    ? MOCK_PROBLEMS
+    : MOCK_PROBLEMS.filter(p => p.category === filter);
 
-  if (loading) return <div className="text-center py-10">Loading problems...</div>;
+  const categories = ['All', ...new Set(MOCK_PROBLEMS.map(p => p.category))];
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h2 className="text-3xl font-bold mb-6 text-gray-800">Real-World Problem Bank</h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {problems.map(problem => (
-          <div key={problem.id} className="bg-white border rounded-lg shadow-sm hover:shadow-md transition-shadow p-6 flex flex-col">
+    <div className="w-full max-w-6xl mx-auto mb-16">
+      <div className="flex gap-4 mb-8 overflow-x-auto pb-2">
+        {categories.map(cat => (
+          <button
+            key={cat}
+            onClick={() => setFilter(cat)}
+            className={`px-4 py-2 rounded-full text-sm font-semibold whitespace-nowrap ${filter === cat ? 'bg-blue-600 text-white' : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'}`}
+          >
+            {cat}
+          </button>
+        ))}
+      </div>
+
+      <div className="grid md:grid-cols-2 gap-6">
+        {filteredProblems.map(problem => (
+          <div key={problem.id} className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
             <div className="flex justify-between items-start mb-4">
-              <span className="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded">{problem.category}</span>
-              <span className={`text-xs font-semibold px-2.5 py-0.5 rounded ${problem.difficulty === 'Advanced' ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'}`}>
+              <span className="text-xs font-bold text-blue-600 bg-blue-50 px-2 py-1 rounded uppercase tracking-wide">{problem.category}</span>
+              <span className={`text-xs font-bold px-2 py-1 rounded ${problem.difficulty === 'Beginner' ? 'text-green-600 bg-green-50' : problem.difficulty === 'Intermediate' ? 'text-orange-600 bg-orange-50' : 'text-red-600 bg-red-50'}`}>
                 {problem.difficulty}
               </span>
             </div>
-            <h3 className="text-xl font-bold mb-2 text-gray-900">{problem.title}</h3>
-            <p className="text-gray-600 text-sm mb-4 flex-grow">{problem.description}</p>
+            <h3 className="text-xl font-bold text-gray-900 mb-2">{problem.title}</h3>
+            <p className="text-gray-600 mb-4 line-clamp-3">{problem.description}</p>
 
-            <div className="mb-4">
+            <div className="flex flex-wrap gap-2 mb-6">
               {problem.tags.map(tag => (
-                <span key={tag} className="inline-block bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded mr-2 mb-1">#{tag}</span>
+                <span key={tag} className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">#{tag}</span>
               ))}
             </div>
 
             <button
               onClick={() => onSelectProblem(problem)}
-              className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition-colors mt-auto"
+              className="w-full py-2 border-2 border-blue-600 text-blue-600 font-bold rounded-lg hover:bg-blue-50 transition-colors"
             >
-              Start Project
+              Solve This Problem
             </button>
           </div>
         ))}

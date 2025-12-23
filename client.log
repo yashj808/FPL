@@ -3,7 +3,20 @@
 > vite
 
 
-  VITE v7.3.0  ready in 776 ms
+  VITE v7.3.0  ready in 643 ms
 
   ➜  Local:   http://localhost:5173/
   ➜  Network: use --host to expose
+7:57:28 AM [vite] (client) hmr update /src/components/ProjectDashboard.jsx, /src/index.css
+7:58:59 AM [vite] (client) hmr update /src/components/ProjectDashboard.jsx, /src/index.css
+8:04:47 AM [vite] (client) hmr update /src/components/ProjectDashboard.jsx, /src/index.css
+8:07:13 AM [vite] (client) hmr update /src/components/ProjectDashboard.jsx, /src/index.css
+8:09:55 AM [vite] (client) hmr update /src/components/ProjectDashboard.jsx, /src/index.css
+8:24:53 AM [vite] (client) hmr update /src/components/ProblemBank.jsx, /src/index.css
+8:25:04 AM [vite] (client) hmr update /src/components/IdeaGenerator.jsx, /src/index.css
+8:25:17 AM [vite] (client) hmr update /src/components/MentorshipConnect.jsx, /src/index.css
+8:25:36 AM [vite] (client) hmr update /src/components/ProjectDashboard.jsx, /src/index.css
+8:25:50 AM [vite] (client) hmr update /src/App.jsx, /src/index.css
+8:29:06 AM [vite] (client) hmr update /src/components/UserOnboarding.jsx, /src/index.css
+8:29:20 AM [vite] (client) hmr update /src/App.jsx, /src/index.css
+8:29:44 AM [vite] (client) hmr update /src/components/PortfolioGenerator.jsx, /src/index.css

@@ -3,34 +3,58 @@ import ProblemBank from './components/ProblemBank';
 import ProjectDashboard from './components/ProjectDashboard';
 import MentorshipConnect from './components/MentorshipConnect';
 import PortfolioGenerator from './components/PortfolioGenerator';
+import UserOnboarding from './components/UserOnboarding';
+import IdeaGenerator from './components/IdeaGenerator';
+import TimelineSetup from './components/TimelineSetup';
+import { MOCK_PROJECT_TEMPLATE } from './data/mockData';
 
 function App() {
-  const [currentView, setCurrentView] = useState('home'); // home, project, mentors, portfolio
+  const [currentView, setCurrentView] = useState('onboarding');
   const [currentProjectId, setCurrentProjectId] = useState(null);
+  const [userProfile, setUserProfile] = useState(null);
+  const [selectedProblem, setSelectedProblem] = useState(null);
+
+  // Local state for projects (Mock DB)
+  const [projects, setProjects] = useState([]);
 
   const handleSelectProblem = (problem) => {
-    const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
-
-    // Create Project
-    fetch(`${apiUrl}/api/projects`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        user_id: 1, // Hardcoded user for demo
-        problem_id: problem.id,
-        title: `My ${problem.title} Project`,
-        category: problem.category
-      })
-    })
-    .then(res => res.json())
-    .then(data => {
-      if (data.projectId) {
-        setCurrentProjectId(data.projectId);
-        setCurrentView('project');
-      }
-    })
-    .catch(err => console.error(err));
+    setSelectedProblem(problem);
   };
+
+  const handleCreateProject = ({ deadline, hoursPerWeek }) => {
+    const totalPhases = MOCK_PROJECT_TEMPLATE.roadmap.length;
+    const start = new Date();
+    const end = new Date(deadline);
+    const totalDuration = end - start;
+    const phaseDuration = totalDuration / totalPhases;
+
+    // Generate Mock Project with distributed dates
+    const newProject = {
+        ...MOCK_PROJECT_TEMPLATE,
+        id: Date.now(),
+        title: selectedProblem.title.startsWith('My ') ? selectedProblem.title : `My ${selectedProblem.title} Project`,
+        problem_title: selectedProblem.title,
+        category: selectedProblem.category,
+        overall_progress: 0,
+        current_phase: 'Planning',
+        roadmap: MOCK_PROJECT_TEMPLATE.roadmap.map((p, index) => {
+            const pStart = new Date(start.getTime() + (phaseDuration * index));
+            const pEnd = new Date(pStart.getTime() + phaseDuration);
+            return {
+                ...p,
+                start_date: pStart.toISOString(),
+                end_date: pEnd.toISOString()
+            };
+        })
+    };
+
+    setProjects([...projects, newProject]);
+    setCurrentProjectId(newProject.id);
+    setSelectedProblem(null);
+    setCurrentView('project');
+  };
+
+  const currentProjectData = projects.find(p => p.id === currentProjectId);
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
@@ -53,19 +77,45 @@ function App() {
       </nav>
 
       <main className="flex-grow">
+        {currentView === 'onboarding' && (
+           <UserOnboarding
+             userId={1}
+             onComplete={(profile) => {
+               setUserProfile(profile);
+               setCurrentView('home');
+             }}
+           />
+        )}
+
         {currentView === 'home' && (
           <div className="flex flex-col items-center">
             <header className="w-full bg-blue-600 text-white py-16 text-center mb-8">
               <h1 className="text-4xl font-bold mb-4">Turn Real Problems into Impactful Projects</h1>
               <p className="text-xl opacity-90">Discover, Plan, and Build with Mentor Guidance.</p>
             </header>
-            <ProblemBank onSelectProblem={handleSelectProblem} />
+
+            <div className="container mx-auto px-4">
+              <IdeaGenerator onSelectProblem={handleSelectProblem} />
+              <div className="border-t border-gray-200 my-8 pt-8">
+                <h2 className="text-3xl font-bold text-center mb-8 text-gray-800">Or Choose from our Problem Bank</h2>
+                <ProblemBank onSelectProblem={handleSelectProblem} />
+              </div>
+            </div>
+
+            {selectedProblem && (
+              <TimelineSetup
+                problem={selectedProblem}
+                onConfirm={handleCreateProject}
+                onCancel={() => setSelectedProblem(null)}
+              />
+            )}
           </div>
         )}
 
         {currentView === 'project' && (
           <ProjectDashboard
             projectId={currentProjectId}
+            projectData={currentProjectData}
             onBack={(action) => {
               if (action === 'portfolio') setCurrentView('portfolio');
               else setCurrentView('home');
@@ -76,6 +126,7 @@ function App() {
         {currentView === 'portfolio' && (
           <PortfolioGenerator
             projectId={currentProjectId}
+            projectData={currentProjectData}
             onBack={() => setCurrentView('project')}
           />
         )}

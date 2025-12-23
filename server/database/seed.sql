@@ -1,5 +1,6 @@
-INSERT INTO users (name, email) VALUES
-('Test User', 'student@university.edu');
+INSERT INTO users (name, email, skill_level, domain_interest) VALUES
+('Student One', 'student1@university.edu', 'Intermediate', '["Web", "AI"]'),
+('Student Two', 'student2@university.edu', 'Beginner', '["IoT"]');
 
 INSERT INTO mentors (name, title, company, expertise, bio) VALUES
 ('Dr. Sarah Chen', 'Senior AI Researcher', 'DeepMind', 'AI/ML, Computer Vision', '10+ years in AI research with a focus on sustainable computing.'),

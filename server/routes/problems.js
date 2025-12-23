@@ -2,6 +2,34 @@ const express = require('express');
 const router = express.Router();
 const pool = require('../config/db');
 
+// Generate Problem from Keyword (Mock AI)
+router.post('/generate', (req, res) => {
+  const { keyword } = req.body;
+
+  // Mock Logic for Unique Problem Generation
+  const templates = [
+    { title: `Smart ${keyword} Optimizer`, desc: `A system to optimize ${keyword} usage using AI/ML algorithms.` },
+    { title: `Decentralized ${keyword} Platform`, desc: `A blockchain-based solution for transparent ${keyword} management.` },
+    { title: `${keyword} Monitoring Dashboard`, desc: `Real-time analytics and visualization tool for ${keyword} data.` },
+    { title: `Automated ${keyword} Assistant`, desc: `An intelligent bot to assist users with ${keyword}-related tasks.` }
+  ];
+
+  const randomTemplate = templates[Math.floor(Math.random() * templates.length)];
+  const uniqueId = Math.floor(Math.random() * 1000);
+
+  const problem = {
+    id: `gen-${uniqueId}`, // Temporary ID
+    title: randomTemplate.title,
+    description: randomTemplate.desc,
+    category: keyword,
+    difficulty: 'Intermediate',
+    tags: [keyword, 'Generated'],
+    is_generated: true
+  };
+
+  res.json(problem);
+});
+
 // Get all problems (with optional filters)
 router.get('/', async (req, res) => {
   try {
