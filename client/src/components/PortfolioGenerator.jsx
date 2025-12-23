@@ -1,22 +1,22 @@
 import { useState, useEffect } from 'react';
+import { MOCK_PROJECT_TEMPLATE } from '../data/mockData';
 
-const PortfolioGenerator = ({ projectId, onBack }) => {
+const PortfolioGenerator = ({ projectId, projectData, onBack }) => {
   const [project, setProject] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
-    fetch(`${apiUrl}/api/projects/${projectId}`)
-      .then(res => res.json())
-      .then(data => {
-        setProject(data);
+    if (projectData) {
+        setProject(projectData);
         setLoading(false);
-      })
-      .catch(err => {
-        console.error(err);
-        setLoading(false);
-      });
-  }, [projectId]);
+    } else {
+        // Fallback or fetch if implementing backend later
+        setTimeout(() => {
+            setProject(MOCK_PROJECT_TEMPLATE);
+            setLoading(false);
+        }, 500);
+    }
+  }, [projectId, projectData]);
 
   const handlePrint = () => {
     window.print();
@@ -24,10 +24,6 @@ const PortfolioGenerator = ({ projectId, onBack }) => {
 
   if (loading) return <div>Loading Portfolio...</div>;
   if (!project) return <div>Project not found</div>;
-
-  const completedPhases = project.roadmap ? project.roadmap.filter(p => p.status === 'completed').length : 0;
-  const totalPhases = project.roadmap ? project.roadmap.length : 0;
-  const progressPercentage = totalPhases > 0 ? Math.round((completedPhases / totalPhases) * 100) : 0;
 
   return (
     <div className="bg-gray-100 min-h-screen p-8 print:bg-white print:p-0">
@@ -52,11 +48,11 @@ const PortfolioGenerator = ({ projectId, onBack }) => {
             <p className="text-xl text-gray-500">{project.category} Project</p>
             <div className="mt-4 flex items-center gap-4">
                <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-semibold">
-                 Status: {project.status.toUpperCase()}
+                 Status: {(project.current_phase === 'Testing & Refinement' || project.overall_progress === 100) ? 'COMPLETED' : 'IN PROGRESS'}
                </span>
                <span className="text-gray-400">|</span>
                <span className="text-gray-600">
-                 Date: {new Date(project.created_at).toLocaleDateString()}
+                 Date: {new Date().toLocaleDateString()}
                </span>
             </div>
           </header>
@@ -67,11 +63,10 @@ const PortfolioGenerator = ({ projectId, onBack }) => {
               The Problem
             </h2>
             <div className="bg-gray-50 p-6 rounded-lg">
-              <h3 className="text-xl font-semibold mb-2">{project.problem_title}</h3>
+              <h3 className="text-xl font-semibold mb-2">{project.problem_title || project.title}</h3>
               <p className="text-gray-700 leading-relaxed">
-                {/* We assume we have the description from the fetch */}
-                (Problem Description would be here. For now, using title as placeholder context.)
-                The goal of this project was to address challenges in {project.category} by building a robust solution.
+                The goal of this project was to address challenges in the {project.category} domain by building a structured, scalable solution.
+                This project focuses on solving key inefficiencies through technology-driven innovation.
               </p>
             </div>
           </section>
@@ -98,6 +93,7 @@ const PortfolioGenerator = ({ projectId, onBack }) => {
                   <li>Database: MySQL</li>
                   {project.category && project.category.includes('AI') && <li>AI/ML: Python, TensorFlow/PyTorch</li>}
                   {project.category && project.category.includes('IoT') && <li>Hardware: Arduino/Raspberry Pi</li>}
+                  {project.category && project.category.includes('Blockchain') && <li>Web3: Solidity, Ether.js</li>}
                 </ul>
               </div>
             </div>
@@ -118,6 +114,9 @@ const PortfolioGenerator = ({ projectId, onBack }) => {
                      <h4 className="font-bold text-gray-800">{phase.title}</h4>
                      <p className="text-sm text-gray-500">
                        {phase.tasks ? `${phase.tasks.length} Key Deliverables` : 'Tasks defined'}
+                     </p>
+                     <p className="text-xs text-gray-400">
+                        {new Date(phase.start_date).toLocaleDateString()} - {new Date(phase.end_date).toLocaleDateString()}
                      </p>
                    </div>
                 </div>

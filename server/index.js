@@ -15,10 +15,12 @@ app.use(express.json());
 const problemRoutes = require('./routes/problems');
 const projectRoutes = require('./routes/projects');
 const mentorRoutes = require('./routes/mentors');
+const userRoutes = require('./routes/users');
 
 app.use('/api/problems', problemRoutes);
 app.use('/api/projects', projectRoutes);
 app.use('/api/mentors', mentorRoutes);
+app.use('/api/users', userRoutes);
 
 // Basic health check route
 app.get('/', (req, res) => {
