@@ -31,8 +31,8 @@ Unlike generic AI idea generators, ProjNavigator focuses on problem-first thinki
 - **"Why It Matters" Builder**: Helps articulate real-world value.
 - **Interview Prep Module**: Simulated viva and questions.
 
-### 6. Project Portfolio Generator
-- **Auto-Portfolio**: Creates presentation-ready pages with problem statements, process, and outcomes.
+### 6. Viva-Ready ie Edge Cases checking
+- **Edge Case Analysis**: Ensures the solution handles edge cases effectively, preparing students for deep technical questions during reviews.
 
 ## 🛠️ Tech Stack
 
