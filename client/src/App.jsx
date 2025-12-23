@@ -1,55 +1,98 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react';
+import ProblemBank from './components/ProblemBank';
+import ProjectDashboard from './components/ProjectDashboard';
+import MentorshipConnect from './components/MentorshipConnect';
+import PortfolioGenerator from './components/PortfolioGenerator';
 
 function App() {
-  const [message, setMessage] = useState('')
+  const [currentView, setCurrentView] = useState('home'); // home, project, mentors, portfolio
+  const [currentProjectId, setCurrentProjectId] = useState(null);
 
-  useEffect(() => {
+  const handleSelectProblem = (problem) => {
     const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
-    fetch(`${apiUrl}/`)
-      .then(res => res.text())
-      .then(data => setMessage(data))
-      .catch(err => console.error(err))
-  }, [])
+
+    // Create Project
+    fetch(`${apiUrl}/api/projects`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        user_id: 1, // Hardcoded user for demo
+        problem_id: problem.id,
+        title: `My ${problem.title} Project`,
+        category: problem.category
+      })
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data.projectId) {
+        setCurrentProjectId(data.projectId);
+        setCurrentView('project');
+      }
+    })
+    .catch(err => console.error(err));
+  };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center">
-      <header className="mb-8 text-center">
-        <h1 className="text-4xl font-bold text-blue-600 mb-2">ProjNavigator</h1>
-        <p className="text-xl text-gray-700">Your Guided Academic Project Builder</p>
-      </header>
+    <div className="min-h-screen bg-gray-50 flex flex-col">
+      <nav className="bg-white shadow-sm">
+        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
+          <div
+            className="text-2xl font-bold text-blue-600 cursor-pointer"
+            onClick={() => setCurrentView('home')}
+          >
+            ProjNavigator
+          </div>
+          <div className="space-x-4">
+            <button onClick={() => setCurrentView('home')} className="text-gray-600 hover:text-blue-600">Problems</button>
+            {currentProjectId && (
+              <button onClick={() => setCurrentView('project')} className="text-gray-600 hover:text-blue-600">Current Project</button>
+            )}
+            <button onClick={() => setCurrentView('mentors')} className="text-gray-600 hover:text-blue-600">Mentors</button>
+          </div>
+        </div>
+      </nav>
 
-      <main className="max-w-4xl w-full bg-white shadow-lg rounded-lg p-8">
-        <section className="mb-8">
-          <h2 className="text-2xl font-semibold mb-4 text-gray-800">Welcome</h2>
-          <p className="text-gray-600 mb-4">
-            ProjNavigator is an interactive, mentor-guided platform that helps engineering students systematically discover real-world problems, design structured solutions, and build meaningful projects.
-          </p>
-          <div className="bg-blue-50 border-l-4 border-blue-500 p-4">
-            <p className="text-blue-700">Backend Status: <span className="font-semibold">{message || 'Loading...'}</span></p>
+      <main className="flex-grow">
+        {currentView === 'home' && (
+          <div className="flex flex-col items-center">
+            <header className="w-full bg-blue-600 text-white py-16 text-center mb-8">
+              <h1 className="text-4xl font-bold mb-4">Turn Real Problems into Impactful Projects</h1>
+              <p className="text-xl opacity-90">Discover, Plan, and Build with Mentor Guidance.</p>
+            </header>
+            <ProblemBank onSelectProblem={handleSelectProblem} />
           </div>
-        </section>
+        )}
 
-        <section className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="bg-gray-50 p-6 rounded-md border border-gray-200">
-            <h3 className="text-lg font-bold mb-2">Problem Discovery</h3>
-            <p className="text-sm text-gray-600">Find real-world problems and check problem-solution fit.</p>
-          </div>
-          <div className="bg-gray-50 p-6 rounded-md border border-gray-200">
-            <h3 className="text-lg font-bold mb-2">Structured Builder</h3>
-            <p className="text-sm text-gray-600">Step-by-step roadmap generator and progress tracking.</p>
-          </div>
-          <div className="bg-gray-50 p-6 rounded-md border border-gray-200">
-            <h3 className="text-lg font-bold mb-2">Mentor Connect</h3>
-            <p className="text-sm text-gray-600">Get guidance from industry pros and peers.</p>
-          </div>
-          <div className="bg-gray-50 p-6 rounded-md border border-gray-200">
-            <h3 className="text-lg font-bold mb-2">Portfolio Generator</h3>
-            <p className="text-sm text-gray-600">Create presentation-ready portfolios automatically.</p>
-          </div>
-        </section>
+        {currentView === 'project' && (
+          <ProjectDashboard
+            projectId={currentProjectId}
+            onBack={(action) => {
+              if (action === 'portfolio') setCurrentView('portfolio');
+              else setCurrentView('home');
+            }}
+          />
+        )}
+
+        {currentView === 'portfolio' && (
+          <PortfolioGenerator
+            projectId={currentProjectId}
+            onBack={() => setCurrentView('project')}
+          />
+        )}
+
+        {currentView === 'mentors' && (
+          <MentorshipConnect
+            projectId={currentProjectId}
+            onBack={() => setCurrentView('home')}
+          />
+        )}
       </main>
+
+      <footer className="bg-gray-800 text-white py-8 text-center">
+        <p>&copy; 2024 ProjNavigator. All rights reserved.</p>
+      </footer>
     </div>
-  )
+  );
 }
 
-export default App
+export default App;
