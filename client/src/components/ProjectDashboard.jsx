@@ -25,7 +25,15 @@ const ProjectDashboard = ({ projectId, onBack }) => {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <button onClick={onBack} className="mb-4 text-blue-600 hover:underline">&larr; Back to Problems</button>
+      <div className="flex justify-between items-center mb-4">
+        <button onClick={onBack} className="text-blue-600 hover:underline">&larr; Back to Problems</button>
+        <button
+          onClick={() => onBack('portfolio')}
+          className="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700 shadow-sm"
+        >
+          View Portfolio
+        </button>
+      </div>
 
       <header className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900">{project.title}</h1>

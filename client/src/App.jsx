@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import ProblemBank from './components/ProblemBank';
 import ProjectDashboard from './components/ProjectDashboard';
+import MentorshipConnect from './components/MentorshipConnect';
+import PortfolioGenerator from './components/PortfolioGenerator';
 
 function App() {
-  const [currentView, setCurrentView] = useState('home'); // home, project
+  const [currentView, setCurrentView] = useState('home'); // home, project, mentors, portfolio
   const [currentProjectId, setCurrentProjectId] = useState(null);
 
   const handleSelectProblem = (problem) => {
@@ -45,7 +47,7 @@ function App() {
             {currentProjectId && (
               <button onClick={() => setCurrentView('project')} className="text-gray-600 hover:text-blue-600">Current Project</button>
             )}
-            <button className="text-gray-600 hover:text-blue-600">Mentors</button>
+            <button onClick={() => setCurrentView('mentors')} className="text-gray-600 hover:text-blue-600">Mentors</button>
           </div>
         </div>
       </nav>
@@ -63,6 +65,23 @@ function App() {
 
         {currentView === 'project' && (
           <ProjectDashboard
+            projectId={currentProjectId}
+            onBack={(action) => {
+              if (action === 'portfolio') setCurrentView('portfolio');
+              else setCurrentView('home');
+            }}
+          />
+        )}
+
+        {currentView === 'portfolio' && (
+          <PortfolioGenerator
+            projectId={currentProjectId}
+            onBack={() => setCurrentView('project')}
+          />
+        )}
+
+        {currentView === 'mentors' && (
+          <MentorshipConnect
             projectId={currentProjectId}
             onBack={() => setCurrentView('home')}
           />

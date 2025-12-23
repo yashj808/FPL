@@ -1,6 +1,12 @@
 INSERT INTO users (name, email) VALUES
 ('Test User', 'student@university.edu');
 
+INSERT INTO mentors (name, title, company, expertise, bio) VALUES
+('Dr. Sarah Chen', 'Senior AI Researcher', 'DeepMind', 'AI/ML, Computer Vision', '10+ years in AI research with a focus on sustainable computing.'),
+('James Wilson', 'Lead Software Architect', 'Google', 'Cloud Architecture, Scalability', 'Expert in distributed systems and cloud infrastructure.'),
+('Anita Patel', 'Product Manager', 'Microsoft', 'Product Strategy, UX/UI', 'Passionate about helping students find product-market fit.'),
+('David Kim', 'Blockchain Developer', 'Coinbase', 'Blockchain, Smart Contracts', 'Specializes in DeFi and supply chain transparency solutions.');
+
 INSERT INTO problems (title, description, category, difficulty, tags) VALUES
 ('Smart Water Management System', 'Design a system to monitor and optimize water usage in urban apartment complexes using IoT sensors and data analytics.', 'IoT/Sustainability', 'Intermediate', '["IoT", "Data Analytics", "Smart City"]'),
 ('AI-Powered Traffic Control', 'Develop an adaptive traffic light control system that uses computer vision to adjust signal timings based on real-time traffic density.', 'AI/ML', 'Advanced', '["Computer Vision", "Python", "Urban Planning"]'),

@@ -5,3 +5,4 @@
 [dotenv@17.2.3] injecting env (6) from .env -- tip: ⚙️  override existing env vars with { override: true }
 [dotenv@17.2.3] injecting env (0) from .env -- tip: 🔄 add secrets lifecycle management: https://dotenvx.com/ops
 Server running on port 5000
+Terminated
