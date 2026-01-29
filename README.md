@@ -5,6 +5,8 @@ ProjNavigator is an interactive, mentor-guided platform that helps engineering s
 
 Unlike generic AI idea generators, ProjNavigator focuses on problem-first thinking, incremental development, and practical understanding.
 
+> **Note:** The current version operates in a **Frontend-Only Demo Mode**. It uses robust mock data to simulate AI generation, database interactions, and authentication. This allows you to explore the full user journey—from onboarding to project roadmap creation—without needing to configure a backend server or MySQL database.
+
 ## 🎯 Core Features
 
 ### 1. Problem Discovery Engine
@@ -29,45 +31,56 @@ Unlike generic AI idea generators, ProjNavigator focuses on problem-first thinki
 - **"Why It Matters" Builder**: Helps articulate real-world value.
 - **Interview Prep Module**: Simulated viva and questions.
 
-### 6. Project Portfolio Generator
-- **Auto-Portfolio**: Creates presentation-ready pages with problem statements, process, and outcomes.
+### 6. Viva-Ready ie Edge Cases checking
+- **Edge Case Analysis**: Ensures the solution handles edge cases effectively, preparing students for deep technical questions during reviews.
 
 ## 🛠️ Tech Stack
 
-- **Frontend**: React + TailwindCSS
-- **Backend**: Node.js + Express
-- **Database**: MySQL
-- **AI Integration**: GPT-4 API
+- **Frontend**: React + TailwindCSS (Vite)
+- **Backend**: Node.js + Express (Optional for Demo)
+- **Database**: MySQL (Optional for Demo)
+- **AI Integration**: GPT-4 API (Simulated in Demo)
 
 ## 📦 Project Structure
 
-- `client/`: Frontend React application.
-- `server/`: Backend Node.js Express application.
+- `client/`: Frontend React application. Contains all UI logic and `src/data/mockData.js`.
+- `server/`: Backend Node.js Express application (Foundation for future full-stack integration).
 
 ## 🚀 Getting Started
 
-### Prerequisites
-- Node.js installed.
-- MySQL database running.
+### Quick Start (Frontend Demo)
+To run the interactive demo immediately:
 
-### Installation
+1. **Navigate to the client directory:**
+   ```bash
+   cd client
+   ```
 
-1. **Clone the repository**
+2. **Install dependencies:**
+   ```bash
+   npm install
+   ```
 
-2. **Backend Setup**
+3. **Start the development server:**
+   ```bash
+   npm run dev
+   ```
+   The application will be available at `http://localhost:5173`.
+
+### Full Stack Configuration (For Future Development)
+If you wish to enable the backend and database integration:
+
+1. **Backend Setup**
    ```bash
    cd server
    npm install
-   # Create a .env file based on the example and configure your DB
+   # Configure .env with your MySQL credentials
+   # Run database initialization
    npm start
    ```
 
-3. **Frontend Setup**
-   ```bash
-   cd client
-   npm install
-   npm run dev
-   ```
+2. **Frontend Connection**
+   Currently, the frontend is configured to prioritize mock data for stability. To connect to the real backend, source code modifications in `App.jsx` and API services would be required to switch off the mock mode.
 
 ## 📄 License
 [MIT](LICENSE)
